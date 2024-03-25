@@ -233,7 +233,7 @@ function getWeekNumberByDate(date) {
   );
 
   const weekNumber = Math.floor(
-    (daysSinceJanuaryFirst + januaryFirstDayOfWeek + 7) / 7
+    (daysSinceJanuaryFirst + januaryFirstDayOfWeek + 6) / 7
   );
 
   return weekNumber;
@@ -260,7 +260,9 @@ function getNextFridayThe13th(date) {
   while (iterations < MAX_ITERATIONS) {
     currentDate.setUTCMonth(currentDate.getUTCMonth() + 1);
     if (currentDate.getUTCDay() === 5) {
-      return new Date(currentDate);
+      const nextFriday = new Date(currentDate);
+      nextFriday.setUTCHours(0, 0, 0, 0);
+      return nextFriday;
     }
     iterations += 1;
   }
