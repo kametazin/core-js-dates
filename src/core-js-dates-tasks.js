@@ -160,15 +160,27 @@ function isDateInPeriod(date, period) {
  */
 function formatDate(date) {
   const parsedDate = new Date(date);
-  const month = parsedDate.getMonth() + 1;
-  const day = parsedDate.getDate();
-  const year = parsedDate.getFullYear();
-  const hours = parsedDate.getHours();
-  const minutes = parsedDate.getMinutes();
-  const seconds = parsedDate.getSeconds();
+
+  const month = parsedDate.getUTCMonth() + 1;
+  const day = parsedDate.getUTCDate();
+  const year = parsedDate.getUTCFullYear();
+  const hours = parsedDate.getUTCHours();
+  const minutes = parsedDate.getUTCMinutes();
+  const seconds = parsedDate.getUTCSeconds();
   const amOrPm = hours >= 12 ? 'PM' : 'AM';
-  const formattedHours = hours % 12 || 12;
-  const formattedDate = `${month}/${day}/${year}, ${formattedHours}:${minutes}:${seconds} ${amOrPm}`;
+  let formattedHours;
+
+  if (hours === 0) {
+    formattedHours = 12;
+  } else if (hours > 12) {
+    formattedHours = hours - 12;
+  } else {
+    formattedHours = hours;
+  }
+
+  const formattedMinutes = String(minutes).padStart(2, '0');
+  const formattedSeconds = String(seconds).padStart(2, '0');
+  const formattedDate = `${month}/${day}/${year}, ${formattedHours}:${formattedMinutes}:${formattedSeconds} ${amOrPm}`;
   return formattedDate;
 }
 
