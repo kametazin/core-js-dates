@@ -226,12 +226,16 @@ function getCountWeekendsInMonth(month, year) {
  * Date(2024, 1, 23) => 8
  */
 function getWeekNumberByDate(date) {
-  const oneDay = 24 * 60 * 60 * 1000;
-  const januaryFirst = new Date(date.getFullYear(), 0, 1);
-  const diffDays = Math.round(
-    (date.getTime() - januaryFirst.getTime()) / oneDay
+  const januaryFirst = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const januaryFirstDayOfWeek = januaryFirst.getUTCDay() || 7;
+  const daysSinceJanuaryFirst = Math.floor(
+    (date - januaryFirst) / (1000 * 60 * 60 * 24)
   );
-  const weekNumber = Math.floor(diffDays / 7) + 1;
+
+  const weekNumber = Math.floor(
+    (daysSinceJanuaryFirst + januaryFirstDayOfWeek + 7) / 7
+  );
+
   return weekNumber;
 }
 
@@ -247,14 +251,16 @@ function getWeekNumberByDate(date) {
  * Date(2023, 1, 1) => Date(2023, 9, 13)
  */
 function getNextFridayThe13th(date) {
-  const currentDate = new Date(date);
+  const currentDate = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 13)
+  );
   const MAX_ITERATIONS = 12;
   let iterations = 0;
+
   while (iterations < MAX_ITERATIONS) {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    currentDate.setDate(13);
-    if (currentDate.getDay() === 5) {
-      return currentDate;
+    currentDate.setUTCMonth(currentDate.getUTCMonth() + 1);
+    if (currentDate.getUTCDay() === 5) {
+      return new Date(currentDate);
     }
     iterations += 1;
   }
@@ -308,20 +314,24 @@ function getWorkSchedule(period, countWorkDays, countOffDays) {
   const startDate = new Date(period.start);
   const endDate = new Date(period.end);
   const workSchedule = [];
-  const currentDate = startDate;
+  const currentDate = new Date(startDate);
   let consecutiveWorkDays = 0;
   let consecutiveOffDays = 0;
+
   while (currentDate <= endDate) {
     workSchedule.push(formatDate(currentDate));
-    currentDate.setDate(currentDate.getDate() + 1);
+
     if (consecutiveWorkDays < countWorkDays) {
       consecutiveWorkDays += 1;
       consecutiveOffDays = 0;
-    }
-    if (consecutiveOffDays < countOffDays) {
+    } else if (consecutiveOffDays < countOffDays) {
       consecutiveOffDays += 1;
       consecutiveWorkDays = 0;
+    } else {
+      consecutiveWorkDays = 0;
+      consecutiveOffDays = 0;
     }
+    currentDate.setDate(currentDate.getDate() + 1);
   }
   return workSchedule;
 }
