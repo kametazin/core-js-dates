@@ -81,7 +81,11 @@ function getDayName(date) {
 function getNextFriday(date) {
   const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
   const dayOfWeek = date.getDay();
-  const daysUntilNextFriday = (5 - dayOfWeek + 7) % 7;
+
+  let daysUntilNextFriday = (5 - dayOfWeek + 7) % 7;
+  if (daysUntilNextFriday === 0) {
+    daysUntilNextFriday = 7;
+  }
   const nextFriday = new Date(
     date.getTime() + daysUntilNextFriday * oneDayInMilliseconds
   );
